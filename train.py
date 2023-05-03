@@ -14,6 +14,7 @@ import os
 import numpy as np
 import random
 from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
 from transweather_model import Transweather
 
@@ -157,7 +158,7 @@ for epoch in range(epoch_start,num_epochs):
     start_time = time.time()
     adjust_learning_rate(optimizer, epoch)
 #-------------------------------------------------------------------------------------------------------------
-    for batch_id, train_data in enumerate(lbl_train_data_loader):
+    for batch_id, train_data in enumerate(tqdm(lbl_train_data_loader)):
 
         input_image, gt, imgid = train_data
         input_image = input_image.to(device)
