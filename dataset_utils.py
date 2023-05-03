@@ -82,7 +82,7 @@ def get_dataset(split: str = 'train'):
     gt_names = []
     for dset, elem in config.datasets.items():
         if split in elem:
-            train_list = os.path.join(config.data_root, elem[split])
+            train_list = os.path.join(config.data_root, elem['path'], elem[split])
         
             with open(train_list) as f:
                 contents = f.readlines()
