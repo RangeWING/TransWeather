@@ -13,6 +13,7 @@ from perceptual import LossNetwork
 import os
 import numpy as np
 import random
+from torch.utils.tensorboard import SummaryWriter
 
 from transweather_model import Transweather
 
@@ -28,7 +29,7 @@ parser.add_argument('-lambda_loss', help='Set the lambda in loss function', defa
 parser.add_argument('-val_batch_size', help='Set the validation/test batch size', default=1, type=int)
 parser.add_argument('-exp_name', help='directory for saving the networks of the experiment', type=str)
 parser.add_argument('-seed', help='set random seed', default=19, type=int)
-parser.add_argument('-num_epochs', help='number of epochs', default=200, type=int)
+parser.add_argument('-num_epochs', help='number of epochs', default=118, type=int)
 
 args = parser.parse_args()
 
@@ -55,6 +56,8 @@ print('--- Hyper-parameters for training ---')
 print('learning_rate: {}\ncrop_size: {}\ntrain_batch_size: {}\nval_batch_size: {}\nlambda_loss: {}'.format(learning_rate, crop_size,
       train_batch_size, val_batch_size, lambda_loss))
 
+logdir = f'./{exp_name}/log'
+writer = SummaryWriter(logdir)
 
 train_data_dir = './data/train/'
 val_data_dir = './data/test/'
@@ -140,6 +143,8 @@ print('Rain Drop old_val_psnr: {0:.2f}, old_val_ssim: {1:.4f}'.format(old_val_ps
 
 net.train()
 
+global_step = 0
+
 for epoch in range(epoch_start,num_epochs):
     psnr_list = []
     start_time = time.time()
@@ -171,6 +176,8 @@ for epoch in range(epoch_start,num_epochs):
 
         if not (batch_id % 100):
             print('Epoch: {0}, Iteration: {1}'.format(epoch, batch_id))
+            writer.add_scalar('train_loss', loss.item(), global_step=global_step)
+        global_step += 1
 
     # --- Calculate the average training PSNR in one epoch --- #
     train_psnr = sum(psnr_list) / len(psnr_list)
@@ -184,6 +191,10 @@ for epoch in range(epoch_start,num_epochs):
     # val_psnr, val_ssim = validation(net, val_data_loader, device, exp_name)
     val_psnr1, val_ssim1 = validation(net, val_data_loader1, device, exp_name)
     # val_psnr2, val_ssim2 = validation(net, val_data_loader2, device, exp_name)
+
+    writer.add_scalar('val_psnr', val_psnr1, global_step=global_step)
+    writer.add_scalar('val_ssim', val_ssim1, global_step=global_step)
+    writer.flush()
 
     one_epoch_time = time.time() - start_time
     # print("Rain 800")

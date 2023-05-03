@@ -88,5 +88,5 @@ def get_dataset(split: str = 'train'):
             with open(train_list) as f:
                 contents = f.readlines()
                 input_names += [os.path.join(data_path, i.strip()) for i in contents]
-                gt_names += [get_gt_name(dset, os.path.join(data_path, i.strip().replace('input','gt'))) for i in input_names]
+                gt_names += [get_gt_name(dset, i.strip().replace('input','gt')) for i in input_names]
     return input_names, gt_names
