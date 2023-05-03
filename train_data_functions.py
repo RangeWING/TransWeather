@@ -76,10 +76,10 @@ class TrainData(data.Dataset):
         return len(self.input_names)
     
 class TrainDataMetaIR(data.Dataset):
-    def __init__(self, crop_size):
+    def __init__(self, crop_size, task: str):
         super().__init__()
 
-        input_names, gt_names = get_dataset('train')
+        input_names, gt_names = get_dataset('train', task)
 
         self.input_names = input_names
         self.gt_names = gt_names
@@ -100,6 +100,11 @@ class TrainDataMetaIR(data.Dataset):
             gt_img = Image.open(gt_name)
         except:
             gt_img = Image.open(gt_name).convert('RGB')
+        
+        if input_img.mode != 'RGB':
+            input_img = input_img.convert('RGB')
+        if gt_img.mode != 'RGB':
+            gt_img = gt_img.convert('RGB')
 
         width, height = input_img.size
 

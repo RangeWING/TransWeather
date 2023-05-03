@@ -75,12 +75,15 @@ def load_data():
     return config
 
 
-def get_dataset(split: str = 'train'):
+def get_dataset(split: str = 'train', task: str = None):
     config = load_data()
 
     input_names = []
     gt_names = []
+
     for dset, elem in config.datasets.items():
+        if task is not None and task != dset: continue
+
         if split in elem:
             train_list = os.path.join(config.data_root, elem[split])
             data_path = os.path.join(config.data_root, elem['path'])

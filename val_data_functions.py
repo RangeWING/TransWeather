@@ -59,7 +59,7 @@ class ValDataMetaIR(data.Dataset):
         super().__init__()
 
         input_names, gt_names = get_dataset('val')
-        
+
         self.input_names = input_names
         self.gt_names = gt_names
         # self.val_data_dir = val_data_dir
@@ -69,6 +69,11 @@ class ValDataMetaIR(data.Dataset):
         gt_name = self.gt_names[index]
         input_img = Image.open(input_name)
         gt_img = Image.open(gt_name)
+        
+        if input_img.mode != 'RGB':
+            input_img = input_img.convert('RGB')
+        if gt_img.mode != 'RGB':
+            gt_img = gt_img.convert('RGB')
 
         # Resizing image in the multiple of 16"
         wd_new,ht_new = input_img.size

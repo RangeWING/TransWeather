@@ -30,6 +30,7 @@ parser.add_argument('-val_batch_size', help='Set the validation/test batch size'
 parser.add_argument('-exp_name', help='directory for saving the networks of the experiment', type=str)
 parser.add_argument('-seed', help='set random seed', default=19, type=int)
 parser.add_argument('-num_epochs', help='number of epochs', default=118, type=int)
+parser.add_argument('-task', help='task', default='all', type=str)
 
 args = parser.parse_args()
 
@@ -41,6 +42,9 @@ lambda_loss = args.lambda_loss
 val_batch_size = args.val_batch_size
 exp_name = args.exp_name
 num_epochs = args.num_epochs
+task = args.task
+if task == 'all':
+    task = None
 
 
 #set seed
@@ -115,13 +119,13 @@ val_filename1 = 'raindroptesta.txt'
 # val_filename2 = 'test1.txt'
 
 # --- Load training data and validation/test data --- #
-lbl_train_data_loader = DataLoader(TrainDataMetaIR(crop_size), batch_size=train_batch_size, shuffle=True, num_workers=8)
+lbl_train_data_loader = DataLoader(TrainDataMetaIR(crop_size, task), batch_size=train_batch_size, shuffle=True, num_workers=8)
 
 ## Uncomment the other validation data loader to keep an eye on performance 
 ## but note that validating while training significantly increases the train time 
 
 # val_data_loader = DataLoader(ValData(val_data_dir,val_filename), batch_size=val_batch_size, shuffle=False, num_workers=8)
-val_data_loader1 = DataLoader(ValDataMetaIR(), batch_size=val_batch_size, shuffle=False, num_workers=8)
+val_data_loader1 = DataLoader(ValDataMetaIR(task), batch_size=val_batch_size, shuffle=False, num_workers=8)
 # val_data_loader2 = DataLoader(ValData(val_data_dir,val_filename2), batch_size=val_batch_size, shuffle=False, num_workers=8)
 
 
