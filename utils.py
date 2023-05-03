@@ -30,7 +30,7 @@ def calc_ssim(im1, im2):
 
     im1_y = cv2.cvtColor(im1, cv2.COLOR_BGR2YCR_CB)[:, :, 0]
     im2_y = cv2.cvtColor(im2, cv2.COLOR_BGR2YCR_CB)[:, :, 0]
-    ans = [compare_ssim(im1_y, im2_y)]
+    ans = [compare_ssim(im1_y, im2_y, data_range=1)]
     return ans
 
 def to_psnr(pred_image, gt):
