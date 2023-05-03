@@ -66,10 +66,6 @@ class TrainData(data.Dataset):
         input_im = transform_input(input_crop_img)
         gt = transform_gt(gt_crop_img)
 
-        # --- Check the channel is 3 or not --- #
-        if list(input_im.shape)[0] is not 3 or list(gt.shape)[0] is not 3:
-            raise Exception('Bad image channel: {}'.format(gt_name))
-
         return input_im, gt, img_id
 
     def __getitem__(self, index):
@@ -84,7 +80,7 @@ class TrainDataMetaIR(data.Dataset):
         super().__init__()
 
         input_names, gt_names = get_dataset('train')
-        
+
         self.input_names = input_names
         self.gt_names = gt_names
         self.crop_size = crop_size
@@ -128,10 +124,6 @@ class TrainDataMetaIR(data.Dataset):
         transform_gt = Compose([ToTensor()])
         input_im = transform_input(input_crop_img)
         gt = transform_gt(gt_crop_img)
-
-        # --- Check the channel is 3 or not --- #
-        if list(input_im.shape)[0] is not 3 or list(gt.shape)[0] is not 3:
-            raise Exception('Bad image channel: {}'.format(gt_name))
 
         return input_im, gt, img_id
 
