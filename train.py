@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 from train_data_functions import TrainDataMetaIR
-from val_data_functions import ValData
+from val_data_functions import ValDataMetaIR
 from utils import to_psnr, print_log, validation, adjust_learning_rate
 from torchvision.models import vgg16
 from perceptual import LossNetwork
@@ -118,7 +118,7 @@ lbl_train_data_loader = DataLoader(TrainDataMetaIR(crop_size), batch_size=train_
 ## but note that validating while training significantly increases the train time 
 
 # val_data_loader = DataLoader(ValData(val_data_dir,val_filename), batch_size=val_batch_size, shuffle=False, num_workers=8)
-val_data_loader1 = DataLoader(ValData(val_data_dir,val_filename1), batch_size=val_batch_size, shuffle=False, num_workers=8)
+val_data_loader1 = DataLoader(ValDataMetaIR(), batch_size=val_batch_size, shuffle=False, num_workers=8)
 # val_data_loader2 = DataLoader(ValData(val_data_dir,val_filename2), batch_size=val_batch_size, shuffle=False, num_workers=8)
 
 
