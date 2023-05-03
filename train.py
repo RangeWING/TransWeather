@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
-from train_data_functions import TrainData
+from train_data_functions import TrainDataMetaIR
 from val_data_functions import ValData
 from utils import to_psnr, print_log, validation, adjust_learning_rate
 from torchvision.models import vgg16
@@ -22,7 +22,7 @@ plt.switch_backend('agg')
 parser = argparse.ArgumentParser(description='Hyper-parameters for network')
 parser.add_argument('-learning_rate', help='Set the learning rate', default=2e-4, type=float)
 parser.add_argument('-crop_size', help='Set the crop_size', default=[256, 256], nargs='+', type=int)
-parser.add_argument('-train_batch_size', help='Set the training batch size', default=18, type=int)
+parser.add_argument('-train_batch_size', help='Set the training batch size', default=40, type=int)
 parser.add_argument('-epoch_start', help='Starting epoch number of the training', default=0, type=int)
 parser.add_argument('-lambda_loss', help='Set the lambda in loss function', default=0.04, type=float)
 parser.add_argument('-val_batch_size', help='Set the validation/test batch size', default=1, type=int)
@@ -112,7 +112,7 @@ val_filename1 = 'raindroptesta.txt'
 # val_filename2 = 'test1.txt'
 
 # --- Load training data and validation/test data --- #
-lbl_train_data_loader = DataLoader(TrainData(crop_size, train_data_dir,labeled_name), batch_size=train_batch_size, shuffle=True, num_workers=8)
+lbl_train_data_loader = DataLoader(TrainDataMetaIR(crop_size), batch_size=train_batch_size, shuffle=True, num_workers=8)
 
 ## Uncomment the other validation data loader to keep an eye on performance 
 ## but note that validating while training significantly increases the train time 

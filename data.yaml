@@ -1,0 +1,32 @@
+data_root: /data/metaIR
+
+datasets:
+  rain13k:
+    path: Rain13k
+    train: rain13k-train.txt
+    val: rain13k-val.txt
+  rain1400: 
+    path: Rain1400
+    train: rain1400-val.txt
+    val: rain1400-val.txt
+    test: rain1400-test.txt
+  ots:
+    path: OTS
+    train: OTS-train.txt
+    val: OTS-val.txt
+    test: OTS-test.txt
+  snow100k: 
+    path: snow100k
+    train: snow100k-train.txt
+    val: snow100k-val.txt
+    test: snow100k-test.txt
+  raindrop: 
+    path: raindrop
+    train: raindrop-train.txt
+    val: raindrop-val.txt
+    test: raindrop-test.txt
+  outdoor-rain: 
+    path: Outdoor-Rain
+    train: outdoor-rain-train.txt
+    val: outdoor-rain-val.txt
+    test: outdoor-rain-test.txt
