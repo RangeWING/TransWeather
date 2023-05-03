@@ -145,6 +145,9 @@ net.train()
 
 global_step = 0
 
+writer.add_scalar('val_psnr', old_val_psnr1, global_step=global_step)
+writer.add_scalar('val_ssim', old_val_ssim1, global_step=global_step)
+
 for epoch in range(epoch_start,num_epochs):
     psnr_list = []
     start_time = time.time()
