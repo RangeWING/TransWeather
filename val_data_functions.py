@@ -55,10 +55,10 @@ class ValData(data.Dataset):
 
 # --- Validation/test dataset --- #
 class ValDataMetaIR(data.Dataset):
-    def __init__(self):
+    def __init__(self, task: str):
         super().__init__()
 
-        input_names, gt_names = get_dataset('val')
+        input_names, gt_names = get_dataset('val', task)
 
         self.input_names = input_names
         self.gt_names = gt_names
@@ -69,7 +69,7 @@ class ValDataMetaIR(data.Dataset):
         gt_name = self.gt_names[index]
         input_img = Image.open(input_name)
         gt_img = Image.open(gt_name)
-        
+
         if input_img.mode != 'RGB':
             input_img = input_img.convert('RGB')
         if gt_img.mode != 'RGB':
