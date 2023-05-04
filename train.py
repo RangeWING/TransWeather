@@ -189,6 +189,7 @@ for epoch in range(epoch_start,num_epochs):
 
     # --- Calculate the average training PSNR in one epoch --- #
     train_psnr = sum(psnr_list) / len(psnr_list)
+    writer.add_scalar('train_psnr', train_psnr, global_step=global_step)
 
     # --- Save the network parameters --- #
     torch.save(net.state_dict(), './{}/latest'.format(exp_name))

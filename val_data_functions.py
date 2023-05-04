@@ -55,10 +55,10 @@ class ValData(data.Dataset):
 
 # --- Validation/test dataset --- #
 class ValDataMetaIR(data.Dataset):
-    def __init__(self, task: str):
+    def __init__(self, task: str, split: str='val'):
         super().__init__()
 
-        input_names, gt_names = get_dataset('val', task)
+        input_names, gt_names = get_dataset(split, task)
 
         self.input_names = input_names
         self.gt_names = gt_names

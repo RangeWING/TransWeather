@@ -45,7 +45,7 @@ def _get_gt_cityscape(input_name: str) -> str:
 
 def _get_gt_ots(input_name: str) -> str:
     dir, base = os.path.split(input_name)
-    return os.path.join(os.path.dirname(dir), base.split('_')[0] + '.jpg')
+    return os.path.join(os.path.dirname(dir), base.split('_')[0] + '.png')
 
 def _get_gt_default(input_name: str) -> str:
     return input_name

@@ -5,14 +5,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
-from train_data_functions import TrainData
-from val_data_functions import ValData
+from train_data_functions import TrainDataMetaIR
+from val_data_functions import ValDataMetaIR
 from utils import to_psnr, print_log, validation, adjust_learning_rate
 from torchvision.models import vgg16
 from perceptual import LossNetwork
 import os
 import numpy as np
 import random
+from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
 from transweather_model import Transweather,Transweather_base
 
@@ -22,13 +24,14 @@ plt.switch_backend('agg')
 parser = argparse.ArgumentParser(description='Hyper-parameters for network')
 parser.add_argument('-learning_rate', help='Set the learning rate', default=2e-4, type=float)
 parser.add_argument('-crop_size', help='Set the crop_size', default=[256, 256], nargs='+', type=int)
-parser.add_argument('-train_batch_size', help='Set the training batch size', default=18, type=int)
+parser.add_argument('-train_batch_size', help='Set the training batch size', default=40, type=int)
 parser.add_argument('-epoch_start', help='Starting epoch number of the training', default=0, type=int)
 parser.add_argument('-lambda_loss', help='Set the lambda in loss function', default=0.04, type=float)
 parser.add_argument('-val_batch_size', help='Set the validation/test batch size', default=1, type=int)
 parser.add_argument('-exp_name', help='directory for saving the networks of the experiment', type=str)
 parser.add_argument('-seed', help='set random seed', default=19, type=int)
 parser.add_argument('-num_epochs', help='number of epochs', default=200, type=int)
+parser.add_argument('-task', help='task', default='all', type=str)
 
 args = parser.parse_args()
 
@@ -40,6 +43,9 @@ lambda_loss = args.lambda_loss
 val_batch_size = args.val_batch_size
 exp_name = args.exp_name
 num_epochs = args.num_epochs
+task = args.task
+if task == 'all':
+    task = None
 
 
 #set seed
@@ -55,6 +61,8 @@ print('--- Hyper-parameters for training ---')
 print('learning_rate: {}\ncrop_size: {}\ntrain_batch_size: {}\nval_batch_size: {}\nlambda_loss: {}'.format(learning_rate, crop_size,
       train_batch_size, val_batch_size, lambda_loss))
 
+logdir = f'./{exp_name}/log'
+writer = SummaryWriter(logdir)
 
 train_data_dir = './data/train/'
 val_data_dir = './data/test/'
@@ -108,8 +116,8 @@ labeled_name = 'rain800.txt' # Change this based on the dataset you choose to tr
 val_filename1 = 'rain800_test.txt' # Change this based on the dataset you choose to test on
 
 # --- Load training data and validation/test data --- #
-lbl_train_data_loader = DataLoader(TrainData(crop_size, train_data_dir,labeled_name), batch_size=train_batch_size, shuffle=True, num_workers=8)
-val_data_loader1 = DataLoader(ValData(val_data_dir,val_filename1), batch_size=val_batch_size, shuffle=False, num_workers=8)
+lbl_train_data_loader = DataLoader(TrainDataMetaIR(crop_size, task), batch_size=train_batch_size, shuffle=True, num_workers=8)
+val_data_loader1 = DataLoader(ValDataMetaIR(task), batch_size=val_batch_size, shuffle=False, num_workers=8)
 
 # --- Previous PSNR and SSIM in testing --- #
 net.eval()
@@ -121,12 +129,16 @@ print('Rain 800 old_val_psnr: {0:.2f}, old_val_ssim: {1:.4f}'.format(old_val_psn
 
 net.train()
 
+global_step = 0
+writer.add_scalar('val_psnr', old_val_psnr1, global_step=global_step)
+writer.add_scalar('val_ssim', old_val_ssim1, global_step=global_step)
+
 for epoch in range(epoch_start,num_epochs):
     psnr_list = []
     start_time = time.time()
     adjust_learning_rate(optimizer, epoch)
 #-------------------------------------------------------------------------------------------------------------
-    for batch_id, train_data in enumerate(lbl_train_data_loader):
+    for batch_id, train_data in enumerate(tqdm(lbl_train_data_loader)):
 
         input_image, gt, imgid = train_data
         input_image = input_image.to(device)
@@ -152,9 +164,12 @@ for epoch in range(epoch_start,num_epochs):
 
         if not (batch_id % 100):
             print('Epoch: {0}, Iteration: {1}'.format(epoch, batch_id))
+            writer.add_scalar('train_loss', loss.item(), global_step=global_step)
+        global_step += 1
 
     # --- Calculate the average training PSNR in one epoch --- #
     train_psnr = sum(psnr_list) / len(psnr_list)
+    writer.add_scalar('train_psnr', train_psnr, global_step=global_step)
 
     # --- Save the network parameters --- #
     torch.save(net.state_dict(), './{}/latest'.format(exp_name))
@@ -163,6 +178,9 @@ for epoch in range(epoch_start,num_epochs):
     net.eval()
 
     val_psnr1, val_ssim1 = validation(net, val_data_loader1, device, exp_name)
+    writer.add_scalar('val_psnr', val_psnr1, global_step=global_step)
+    writer.add_scalar('val_ssim', val_ssim1, global_step=global_step)
+    writer.flush()
 
     one_epoch_time = time.time() - start_time
 

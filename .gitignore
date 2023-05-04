@@ -1,0 +1,9 @@
+all
+imgs
+__pycache__
+ots*
+rain*
+snow*
+results
+training_log
+outdoor*
