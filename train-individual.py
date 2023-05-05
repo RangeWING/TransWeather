@@ -26,6 +26,7 @@ parser.add_argument('-learning_rate', help='Set the learning rate', default=2e-4
 parser.add_argument('-crop_size', help='Set the crop_size', default=[256, 256], nargs='+', type=int)
 parser.add_argument('-train_batch_size', help='Set the training batch size', default=40, type=int)
 parser.add_argument('-epoch_start', help='Starting epoch number of the training', default=0, type=int)
+parser.add_argument('-step_start', help='Starting epoch number of the training', default=0, type=int)
 parser.add_argument('-lambda_loss', help='Set the lambda in loss function', default=0.04, type=float)
 parser.add_argument('-val_batch_size', help='Set the validation/test batch size', default=1, type=int)
 parser.add_argument('-exp_name', help='directory for saving the networks of the experiment', type=str)
@@ -43,6 +44,7 @@ lambda_loss = args.lambda_loss
 val_batch_size = args.val_batch_size
 exp_name = args.exp_name
 num_epochs = args.num_epochs
+step_start = args.step_start
 task = args.task
 if task == 'all':
     task = None
@@ -129,7 +131,7 @@ print('Rain 800 old_val_psnr: {0:.2f}, old_val_ssim: {1:.4f}'.format(old_val_psn
 
 net.train()
 
-global_step = 0
+global_step = step_start
 writer.add_scalar('val_psnr', old_val_psnr1, global_step=global_step)
 writer.add_scalar('val_ssim', old_val_ssim1, global_step=global_step)
 
